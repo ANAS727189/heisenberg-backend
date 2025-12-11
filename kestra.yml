@@ -1,0 +1,14 @@
+kestra:
+  storage:
+    type: local
+    basePath: /data/storage
+
+  repository:
+    type: h2
+    basePath: /data/repository
+
+  queue:
+    type: h2
+
+server:
+  type: standalone
