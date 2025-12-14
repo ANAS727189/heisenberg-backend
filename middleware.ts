@@ -1,0 +1,29 @@
+
+import { NextResponse } from 'next/server';
+
+// Heisenberg Auto-Generated Rate Limiter
+// Applied to mitigate DDoS vector detected in /api/victim
+
+const RATE_LIMIT = 10;
+const WINDOW = 60 * 1000; // 1 minute
+const ipMap = new Map();
+
+export function middleware(request) {
+    const ip = request.headers.get('x-forwarded-for') || 'unknown';
+    const now = Date.now();
+    
+    const record = ipMap.get(ip) || { count: 0, start: now };
+    
+    if (now - record.start > WINDOW) {
+        record.count = 1;
+        record.start = now;
+    } else {
+        record.count++;
+    }
+    
+    ipMap.set(ip, record);
+    
+    if (record.count > RATE_LIMIT) {
+        return NextResponse.json({ error: "Too Many Requests" }, { status: 429 });
+    }
+}
